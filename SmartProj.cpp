@@ -27,9 +27,9 @@ HWND TreeViewCreate(HWND);
 void TreeViewAddItem(HWND, LPWSTR, BOOL);
 
 int WINAPI WinMain(HINSTANCE hInstance,
-                   HINSTANCE hPrevInstance,
-                   LPTSTR    lpCmdLine,
-                   int       nCmdShow)
+				   HINSTANCE hPrevInstance,
+				   LPTSTR    lpCmdLine,
+				   int       nCmdShow)
 {
 	MSG msg;
 
@@ -92,59 +92,59 @@ ATOM MyRegisterClass(HINSTANCE hInstance, LPTSTR szWindowClass)
 //
 BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 {
-    HWND hWnd;
-    TCHAR szTitle[MAX_LOADSTRING];		// title bar text
-    TCHAR szWindowClass[MAX_LOADSTRING];	// main window class name
+	HWND hWnd;
+	TCHAR szTitle[MAX_LOADSTRING];		// title bar text
+	TCHAR szWindowClass[MAX_LOADSTRING];	// main window class name
 
-    g_hInst = hInstance; // Store instance handle in our global variable
+	g_hInst = hInstance; // Store instance handle in our global variable
 
-    // SHInitExtraControls should be called once during your application's initialization to initialize any
-    // of the device specific controls such as CAPEDIT and SIPPREF.
-    SHInitExtraControls();
+	// SHInitExtraControls should be called once during your application's initialization to initialize any
+	// of the device specific controls such as CAPEDIT and SIPPREF.
+	SHInitExtraControls();
 
-    LoadString(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING); 
-    LoadString(hInstance, IDC_SMARTPROJ, szWindowClass, MAX_LOADSTRING);
+	LoadString(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING); 
+	LoadString(hInstance, IDC_SMARTPROJ, szWindowClass, MAX_LOADSTRING);
 
-    //If it is already running, then focus on the window, and exit
-    hWnd = FindWindow(szWindowClass, szTitle);	
-    if (hWnd) 
-    {
-        // set focus to foremost child window
-        // The "| 0x00000001" is used to bring any owned windows to the foreground and
-        // activate them.
-        SetForegroundWindow((HWND)((ULONG) hWnd | 0x00000001));
-        return 0;
-    }
+	//If it is already running, then focus on the window, and exit
+	hWnd = FindWindow(szWindowClass, szTitle);	
+	if (hWnd) 
+	{
+		// set focus to foremost child window
+		// The "| 0x00000001" is used to bring any owned windows to the foreground and
+		// activate them.
+		SetForegroundWindow((HWND)((ULONG) hWnd | 0x00000001));
+		return 0;
+	}
 
-    if (!MyRegisterClass(hInstance, szWindowClass))
-    {
-    	return FALSE;
-    }
+	if (!MyRegisterClass(hInstance, szWindowClass))
+	{
+		return FALSE;
+	}
 
-    hWnd = CreateWindow(szWindowClass, szTitle, WS_VISIBLE,
-        CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, NULL, NULL, hInstance, NULL);
+	hWnd = CreateWindow(szWindowClass, szTitle, WS_VISIBLE,
+		CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, NULL, NULL, hInstance, NULL);
 
-    if (!hWnd)
-    {
-        return FALSE;
-    }
+	if (!hWnd)
+	{
+		return FALSE;
+	}
 
 	mainWin = hWnd;
 
-    // When the main window is created using CW_USEDEFAULT the height of the menubar (if one
-    // is created is not taken into account). So we resize the window after creating it
-    // if a menubar is present
-    if (g_hWndMenuBar)
-    {
-        RECT rc;
-        RECT rcMenuBar;
+	// When the main window is created using CW_USEDEFAULT the height of the menubar (if one
+	// is created is not taken into account). So we resize the window after creating it
+	// if a menubar is present
+	if (g_hWndMenuBar)
+	{
+		RECT rc;
+		RECT rcMenuBar;
 
-        GetWindowRect(hWnd, &rc);
-        GetWindowRect(g_hWndMenuBar, &rcMenuBar);
-        rc.bottom -= (rcMenuBar.bottom - rcMenuBar.top);
-		
-        MoveWindow(hWnd, rc.left, rc.top, rc.right-rc.left, rc.bottom-rc.top, FALSE);
-    }
+		GetWindowRect(hWnd, &rc);
+		GetWindowRect(g_hWndMenuBar, &rcMenuBar);
+		rc.bottom -= (rcMenuBar.bottom - rcMenuBar.top);
+
+		MoveWindow(hWnd, rc.left, rc.top, rc.right-rc.left, rc.bottom-rc.top, FALSE);
+	}
 
 	// Work on a tree view
 	hwndTV = TreeViewCreate(hWnd);
@@ -152,11 +152,11 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 	CTRoot->render(hwndTV, NULL);
 	TreeView_Select(hwndTV, CTRoot->getHandle(), TVGN_CARET);
 
-    ShowWindow(hWnd, nCmdShow);
-    UpdateWindow(hWnd);
+	ShowWindow(hWnd, nCmdShow);
+	UpdateWindow(hWnd);
 
 
-    return TRUE;
+	return TRUE;
 }
 
 //
@@ -171,195 +171,195 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 //
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-    int wmId, wmEvent;
-    PAINTSTRUCT ps;
-    HDC hdc;
+	int wmId, wmEvent;
+	PAINTSTRUCT ps;
+	HDC hdc;
 
-    static SHACTIVATEINFO s_sai;
-	
-    switch (message) 
-    {
-        case WM_COMMAND:
-            wmId    = LOWORD(wParam); 
-            wmEvent = HIWORD(wParam); 
-            // Parse the menu selections:
-            switch (wmId)
-            {
-                case IDM_HELP_ABOUT:
-                    DialogBox(g_hInst, (LPCTSTR)IDD_ABOUTBOX, hWnd, About);
-                    break;
-				case IDM_ADD_ITEM:
-					DialogBox(g_hInst, (LPCTSTR)IDD_ADDBOX, hWnd, AddBox);
-					TreeViewAddItem(hwndTV, (LPWSTR) &addedItem, false);
-					break;
-				case IDM_ADD_CATEGORY:
-					DialogBox(g_hInst, (LPCTSTR)IDD_ADDBOX, hWnd, AddBox);
-					TreeViewAddItem(hwndTV, (LPWSTR) &addedItem, true);
-					break;
-                case IDM_OK:
-					delete CTRoot;
-                    SendMessage (hWnd, WM_CLOSE, 0, 0);				
-                    break;
-                default:
-                    return DefWindowProc(hWnd, message, wParam, lParam);
-            }
-            break;
-        case WM_CREATE:
-            SHMENUBARINFO mbi;
+	static SHACTIVATEINFO s_sai;
 
-            memset(&mbi, 0, sizeof(SHMENUBARINFO));
-            mbi.cbSize     = sizeof(SHMENUBARINFO);
-            mbi.hwndParent = hWnd;
-            mbi.nToolBarId = IDR_MENU;
-            mbi.hInstRes   = g_hInst;
-
-            if (!SHCreateMenuBar(&mbi)) 
-            {
-                g_hWndMenuBar = NULL;
-            }
-            else
-            {
-                g_hWndMenuBar = mbi.hwndMB;
-            }
-
-            // Initialize the shell activate info structure
-            memset(&s_sai, 0, sizeof (s_sai));
-            s_sai.cbSize = sizeof (s_sai);
-            break;
-        case WM_PAINT:
-            hdc = BeginPaint(hWnd, &ps);
-            
-            // TODO: Add any drawing code here...
-            
-            EndPaint(hWnd, &ps);
-            break;
-        case WM_DESTROY:
-            CommandBar_Destroy(g_hWndMenuBar);
-            PostQuitMessage(0);
-            break;
-
-        case WM_ACTIVATE:
-            // Notify shell of our activate message
-            SHHandleWMActivate(hWnd, wParam, lParam, &s_sai, FALSE);
-            break;
-        case WM_SETTINGCHANGE:
-            SHHandleWMSettingChange(hWnd, wParam, lParam, &s_sai);
-            break;
-
-		case WM_NOTIFY:
-			if (((LPNMHDR)lParam)->code == TVN_SELCHANGED)
-			{
-				currentItem = TreeView_GetSelection(hwndTV);
-			}
-			else if (((LPNMHDR)lParam)->code == TVN_ITEMEXPANDED)
-			{
-				LPNMTREEVIEW tv;
-				tv = (LPNMTREEVIEW) lParam;
-				CTRoot->findNodeByHandle(currentItem)->setExpanded(tv->action == TVE_EXPAND);
-				CTRoot->render(hwndTV, NULL);
-			}
+	switch (message) 
+	{
+	case WM_COMMAND:
+		wmId    = LOWORD(wParam); 
+		wmEvent = HIWORD(wParam); 
+		// Parse the menu selections:
+		switch (wmId)
+		{
+		case IDM_HELP_ABOUT:
+			DialogBox(g_hInst, (LPCTSTR)IDD_ABOUTBOX, hWnd, About);
 			break;
+		case IDM_ADD_ITEM:
+			DialogBox(g_hInst, (LPCTSTR)IDD_ADDBOX, hWnd, AddBox);
+			TreeViewAddItem(hwndTV, (LPWSTR) &addedItem, false);
+			break;
+		case IDM_ADD_CATEGORY:
+			DialogBox(g_hInst, (LPCTSTR)IDD_ADDBOX, hWnd, AddBox);
+			TreeViewAddItem(hwndTV, (LPWSTR) &addedItem, true);
+			break;
+		case IDM_OK:
+			delete CTRoot;
+			SendMessage (hWnd, WM_CLOSE, 0, 0);				
+			break;
+		default:
+			return DefWindowProc(hWnd, message, wParam, lParam);
+		}
+		break;
+	case WM_CREATE:
+		SHMENUBARINFO mbi;
 
-        default:
-            return DefWindowProc(hWnd, message, wParam, lParam);
-    }
-    return 0;
+		memset(&mbi, 0, sizeof(SHMENUBARINFO));
+		mbi.cbSize     = sizeof(SHMENUBARINFO);
+		mbi.hwndParent = hWnd;
+		mbi.nToolBarId = IDR_MENU;
+		mbi.hInstRes   = g_hInst;
+
+		if (!SHCreateMenuBar(&mbi)) 
+		{
+			g_hWndMenuBar = NULL;
+		}
+		else
+		{
+			g_hWndMenuBar = mbi.hwndMB;
+		}
+
+		// Initialize the shell activate info structure
+		memset(&s_sai, 0, sizeof (s_sai));
+		s_sai.cbSize = sizeof (s_sai);
+		break;
+	case WM_PAINT:
+		hdc = BeginPaint(hWnd, &ps);
+
+		// TODO: Add any drawing code here...
+
+		EndPaint(hWnd, &ps);
+		break;
+	case WM_DESTROY:
+		CommandBar_Destroy(g_hWndMenuBar);
+		PostQuitMessage(0);
+		break;
+
+	case WM_ACTIVATE:
+		// Notify shell of our activate message
+		SHHandleWMActivate(hWnd, wParam, lParam, &s_sai, FALSE);
+		break;
+	case WM_SETTINGCHANGE:
+		SHHandleWMSettingChange(hWnd, wParam, lParam, &s_sai);
+		break;
+
+	case WM_NOTIFY:
+		if (((LPNMHDR)lParam)->code == TVN_SELCHANGED)
+		{
+			currentItem = TreeView_GetSelection(hwndTV);
+		}
+		else if (((LPNMHDR)lParam)->code == TVN_ITEMEXPANDED)
+		{
+			LPNMTREEVIEW tv;
+			tv = (LPNMTREEVIEW) lParam;
+			CTRoot->findNodeByHandle(currentItem)->setExpanded(tv->action == TVE_EXPAND);
+			CTRoot->render(hwndTV, NULL);
+		}
+		break;
+
+	default:
+		return DefWindowProc(hWnd, message, wParam, lParam);
+	}
+	return 0;
 }
 
 // Message handler for about box.
 INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
-    switch (message)
-    {
-        case WM_INITDIALOG:
-            {
-                // Create a Done button and size it.  
-                SHINITDLGINFO shidi;
-                shidi.dwMask = SHIDIM_FLAGS;
-                shidi.dwFlags = SHIDIF_DONEBUTTON | SHIDIF_SIPDOWN | SHIDIF_SIZEDLGFULLSCREEN | SHIDIF_EMPTYMENU;
-                shidi.hDlg = hDlg;
-                SHInitDialog(&shidi);
-            }
-            return (INT_PTR)TRUE;
+	switch (message)
+	{
+	case WM_INITDIALOG:
+		{
+			// Create a Done button and size it.  
+			SHINITDLGINFO shidi;
+			shidi.dwMask = SHIDIM_FLAGS;
+			shidi.dwFlags = SHIDIF_DONEBUTTON | SHIDIF_SIPDOWN | SHIDIF_SIZEDLGFULLSCREEN | SHIDIF_EMPTYMENU;
+			shidi.hDlg = hDlg;
+			SHInitDialog(&shidi);
+		}
+		return (INT_PTR)TRUE;
 
-        case WM_COMMAND:
-            if (LOWORD(wParam) == IDOK)
-            {
-                EndDialog(hDlg, LOWORD(wParam));
-                return TRUE;
-            }
-            break;
+	case WM_COMMAND:
+		if (LOWORD(wParam) == IDOK)
+		{
+			EndDialog(hDlg, LOWORD(wParam));
+			return TRUE;
+		}
+		break;
 
-        case WM_CLOSE:
-            EndDialog(hDlg, message);
-            return TRUE;
+	case WM_CLOSE:
+		EndDialog(hDlg, message);
+		return TRUE;
 
-    }
-    return (INT_PTR)FALSE;
+	}
+	return (INT_PTR)FALSE;
 }
 
 // Message handler for node addition box
 INT_PTR CALLBACK AddBox(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
-    switch (message)
-    {
-        case WM_INITDIALOG:
-            {
-                // Create a Done button and size it.  
-                SHINITDLGINFO shidi;
-                shidi.dwMask = SHIDIM_FLAGS;
-                shidi.dwFlags = SHIDIF_DONEBUTTON | SHIDIF_SIPDOWN | SHIDIF_SIZEDLGFULLSCREEN | SHIDIF_EMPTYMENU;
-                shidi.hDlg = hDlg;
-                SHInitDialog(&shidi);
-				SHSipPreference(hDlg, SIP_UP);
-            }
-            return (INT_PTR)TRUE;
+	switch (message)
+	{
+	case WM_INITDIALOG:
+		{
+			// Create a Done button and size it.  
+			SHINITDLGINFO shidi;
+			shidi.dwMask = SHIDIM_FLAGS;
+			shidi.dwFlags = SHIDIF_DONEBUTTON | SHIDIF_SIPDOWN | SHIDIF_SIZEDLGFULLSCREEN | SHIDIF_EMPTYMENU;
+			shidi.hDlg = hDlg;
+			SHInitDialog(&shidi);
+			SHSipPreference(hDlg, SIP_UP);
+		}
+		return (INT_PTR)TRUE;
 
-        case WM_COMMAND:
-            if (LOWORD(wParam) == IDOK)
-            {
-				HWND hwEdit = GetDlgItem(hDlg, IDC_EDIT1);
-				GetWindowText(hwEdit, (LPWSTR)&addedItem, sizeof(addedItem));
-				SHSipPreference(hDlg, SIP_DOWN);
-				SipShowIM(SIPF_OFF);
-                EndDialog(hDlg, LOWORD(wParam));
-                return TRUE;
-            }
-            break;
-
-        case WM_CLOSE:
+	case WM_COMMAND:
+		if (LOWORD(wParam) == IDOK)
+		{
+			HWND hwEdit = GetDlgItem(hDlg, IDC_EDIT1);
+			GetWindowText(hwEdit, (LPWSTR)&addedItem, sizeof(addedItem));
 			SHSipPreference(hDlg, SIP_DOWN);
 			SipShowIM(SIPF_OFF);
-            EndDialog(hDlg, message);
-            return TRUE;
+			EndDialog(hDlg, LOWORD(wParam));
+			return TRUE;
+		}
+		break;
 
-    }
-    return (INT_PTR)FALSE;
+	case WM_CLOSE:
+		SHSipPreference(hDlg, SIP_DOWN);
+		SipShowIM(SIPF_OFF);
+		EndDialog(hDlg, message);
+		return TRUE;
+
+	}
+	return (INT_PTR)FALSE;
 }
 
 HWND TreeViewCreate(HWND hwndParent)
 { 
-    RECT rcClient;  // dimensions of client area 
-    HWND hwndTV;    // handle to tree-view control 
+	RECT rcClient;  // dimensions of client area 
+	HWND hwndTV;    // handle to tree-view control 
 
-    // Ensure that the common control DLL is loaded. 
-    InitCommonControls(); 
+	// Ensure that the common control DLL is loaded. 
+	InitCommonControls(); 
 
-    // Get the dimensions of the parent window's client area, and create 
-    // the tree-view control. 
-    GetClientRect(hwndParent, &rcClient); 
-    hwndTV = CreateWindowEx(0,
-                            WC_TREEVIEW,
-                            TEXT("Projects"),
-							WS_VISIBLE | WS_CHILD | WS_BORDER | TVS_HASLINES | TVS_CHECKBOXES, 
-                            0, 
-                            0, 
-                            rcClient.right, 
-                            rcClient.bottom,
-                            hwndParent, 
-                            (HMENU)ID_TREEVIEW, 
-                            g_hInst, 
-                            NULL); 
+	// Get the dimensions of the parent window's client area, and create 
+	// the tree-view control. 
+	GetClientRect(hwndParent, &rcClient); 
+	hwndTV = CreateWindowEx(0,
+		WC_TREEVIEW,
+		TEXT("Projects"),
+		WS_VISIBLE | WS_CHILD | WS_BORDER | TVS_HASLINES | TVS_CHECKBOXES, 
+		0, 
+		0, 
+		rcClient.right, 
+		rcClient.bottom,
+		hwndParent, 
+		(HMENU)ID_TREEVIEW, 
+		g_hInst, 
+		NULL); 
 
 	HIMAGELIST imageList = ImageList_Create(16, 16, 0, 3, 3);
 	DRA::ImageList_AddIcon(imageList, LoadIcon(g_hInst, MAKEINTRESOURCE(IDI_FOLDER)));
@@ -367,7 +367,7 @@ HWND TreeViewCreate(HWND hwndParent)
 	DRA::ImageList_AddIcon(imageList, LoadIcon(g_hInst, MAKEINTRESOURCE(IDI_RECORD)));
 	TreeView_SetImageList(hwndTV, imageList, TVSIL_NORMAL);
 
-    return hwndTV;
+	return hwndTV;
 } 
 
 void TreeViewAddItem(HWND hwndTV, LPWSTR s, BOOL cat)

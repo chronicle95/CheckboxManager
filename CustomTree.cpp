@@ -185,8 +185,8 @@ void CustomTree::render(HWND hWndTv, HTREEITEM parentItem)
 		tvis.item.iImage = 2; // file picture
 		tvis.item.iSelectedImage = 2;
 	}
-    tvis.item.pszText = (LPWSTR) tmp;
-    tvis.hInsertAfter = TVI_LAST;
+	tvis.item.pszText = (LPWSTR) tmp;
+	tvis.hInsertAfter = TVI_LAST;
 	tvis.hParent = parentItem ? parentItem : TVI_ROOT;
 
 	this->handle = TreeView_InsertItem(hWndTv, (LPTVINSERTSTRUCT)&tvis);
@@ -205,7 +205,7 @@ void CustomTree::render(HWND hWndTv, HTREEITEM parentItem)
 BOOL CustomTree::saveToFile(LPCWSTR fileName)
 {
 	HANDLE hFile = CreateFile(fileName, GENERIC_WRITE, 0, NULL,
-							  CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+		CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
 	if (!hFile)
 	{
 		return false;
@@ -220,7 +220,7 @@ BOOL CustomTree::saveToFile(LPCWSTR fileName)
 BOOL CustomTree::loadFromFile(LPCWSTR fileName)
 {
 	HANDLE hFile = CreateFile(fileName, GENERIC_READ, 0, NULL,
-						      OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+		OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
 	if (!hFile)
 	{
 		return false;
