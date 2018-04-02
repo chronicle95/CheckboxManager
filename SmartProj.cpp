@@ -337,7 +337,6 @@ INT_PTR CALLBACK AddBox(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 			shidi.dwFlags = SHIDIF_DONEBUTTON | SHIDIF_SIPDOWN | SHIDIF_SIZEDLGFULLSCREEN | SHIDIF_EMPTYMENU;
 			shidi.hDlg = hDlg;
 			SHInitDialog(&shidi);
-			SHSipPreference(hDlg, SIP_UP);
 		}
 		return (INT_PTR)TRUE;
 
@@ -346,15 +345,17 @@ INT_PTR CALLBACK AddBox(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 		{
 			HWND hwEdit = GetDlgItem(hDlg, IDC_EDIT1);
 			GetWindowText(hwEdit, (LPWSTR)&addedItem, sizeof(addedItem));
-			SHSipPreference(hDlg, SIP_DOWN);
 			SipShowIM(SIPF_OFF);
 			EndDialog(hDlg, LOWORD(wParam));
 			return TRUE;
 		}
+		if (HIWORD(wParam) == EN_SETFOCUS)
+		{
+			SHSipPreference(hDlg, SIP_UP);
+		}
 		break;
 
 	case WM_CLOSE:
-		SHSipPreference(hDlg, SIP_DOWN);
 		SipShowIM(SIPF_OFF);
 		EndDialog(hDlg, message);
 		return TRUE;
