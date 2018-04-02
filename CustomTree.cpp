@@ -206,7 +206,7 @@ BOOL CustomTree::saveToFile(LPCWSTR fileName)
 {
 	HANDLE hFile = CreateFile(fileName, GENERIC_WRITE, 0, NULL,
 		CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
-	if (!hFile)
+	if (hFile == INVALID_HANDLE_VALUE)
 	{
 		return false;
 	}
@@ -221,7 +221,7 @@ BOOL CustomTree::loadFromFile(LPCWSTR fileName)
 {
 	HANDLE hFile = CreateFile(fileName, GENERIC_READ, 0, NULL,
 		OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
-	if (!hFile)
+	if (hFile == INVALID_HANDLE_VALUE)
 	{
 		return false;
 	}

@@ -211,13 +211,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			TreeViewAddItem(hwndTV, (LPWSTR) &addedItem, true);
 			break;
 		case ID_OPTIONS_SAVEAS:
-			if (GetSaveFileName(&ofn))
+			if (GetSaveFileName(&ofn) == TRUE)
 			{
 				CTRoot->saveToFile(ofn.lpstrFile);
 			}
 			break;
 		case ID_OPTIONS_OPEN:
-			if (GetOpenFileName(&ofn))
+			if (GetOpenFileName(&ofn) == TRUE)
 			{
 				CTRoot->loadFromFile(ofn.lpstrFile);
 			}
