@@ -174,8 +174,22 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	int wmId, wmEvent;
 	PAINTSTRUCT ps;
 	HDC hdc;
-
 	static SHACTIVATEINFO s_sai;
+
+	OPENFILENAME ofn;
+	TCHAR name[256];
+
+	ZeroMemory(&ofn, sizeof(ofn));
+	ofn.lStructSize = sizeof(ofn);
+	ofn.hwndOwner = mainWin;
+	ofn.lpstrFile = name;
+	ofn.lpstrFile[0] = '\0';
+	ofn.nMaxFile = sizeof(name);
+	ofn.lpstrFilter = L"All\0*.*\0JSON file\0*.JSON\0";
+	ofn.nFilterIndex = 1;
+	ofn.lpstrFileTitle = NULL;
+	ofn.nMaxFileTitle = 0;
+	ofn.lpstrInitialDir = NULL;
 
 	switch (message) 
 	{
@@ -195,6 +209,18 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		case IDM_ADD_CATEGORY:
 			DialogBox(g_hInst, (LPCTSTR)IDD_ADDBOX, hWnd, AddBox);
 			TreeViewAddItem(hwndTV, (LPWSTR) &addedItem, true);
+			break;
+		case ID_OPTIONS_SAVEAS:
+			if (GetSaveFileName(&ofn))
+			{
+				CTRoot->saveToFile(ofn.lpstrFile);
+			}
+			break;
+		case ID_OPTIONS_OPEN:
+			if (GetOpenFileName(&ofn))
+			{
+				CTRoot->loadFromFile(ofn.lpstrFile);
+			}
 			break;
 		case IDM_OK:
 			delete CTRoot;

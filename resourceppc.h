@@ -22,6 +22,8 @@
 #define ID_ADD_ITEM                     32772
 #define ID_OPTIONS_ADDITEM              32773
 #define ID_OPTIONS_ADDCATEGORY          32774
+#define ID_OPTIONS_SAVEAS               32775
+#define ID_OPTIONS_OPEN                 32776
 #define IDM_OK                          40000
 #define IDM_HELP                        40001
 #define IDM_HELP_ABOUT                  40002
@@ -36,7 +38,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NO_MFC                     1
 #define _APS_NEXT_RESOURCE_VALUE        135
-#define _APS_NEXT_COMMAND_VALUE         32775
+#define _APS_NEXT_COMMAND_VALUE         32777
 #define _APS_NEXT_CONTROL_VALUE         1001
 #define _APS_NEXT_SYMED_VALUE           110
 #endif

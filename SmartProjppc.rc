@@ -158,6 +158,9 @@ BEGIN
         MENUITEM SEPARATOR
         MENUITEM "Add item...",                 IDM_ADD_ITEM
         MENUITEM "Add category...",             IDM_ADD_CATEGORY
+        MENUITEM SEPARATOR
+        MENUITEM "Save as...",                  ID_OPTIONS_SAVEAS
+        MENUITEM "Open...",                     ID_OPTIONS_OPEN
     END
 END
 
