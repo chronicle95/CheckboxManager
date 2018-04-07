@@ -79,7 +79,7 @@ HTREEITEM CustomTree::getHandle()
 	return this->handle;
 }
 
-CustomTree* CustomTree::findNodeByHandle(HTREEITEM handle)
+CustomTree* CustomTree::findNodeByHandle (HTREEITEM handle)
 {
 	CustomTree *node = this;
 
@@ -94,7 +94,7 @@ CustomTree* CustomTree::findNodeByHandle(HTREEITEM handle)
 			CustomTree *node2 = node->getFirstChild();
 			if (node2)
 			{
-				node2 = node2->findNodeByHandle(handle);
+				node2 = node2->findNodeByHandle (handle);
 				if (node2)
 				{
 					return node2;

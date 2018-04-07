@@ -18,7 +18,7 @@ public:
 	UINT getPercent(HWND hWndTv);
 	BOOL saveToFile(LPCWSTR fileName);
 	BOOL loadFromFile(LPCWSTR fileName);
-	CustomTree *findNodeByHandle(HTREEITEM handle);
+	CustomTree *findNodeByHandle (HTREEITEM handle);
 private:
 	HTREEITEM handle;
 	CustomTree *firstChild;
