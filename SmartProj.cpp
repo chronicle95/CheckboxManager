@@ -395,7 +395,7 @@ HWND TreeViewCreate(HWND hwndParent)
 	TreeView_SetImageList(hwndTV, imageList, TVSIL_NORMAL);
 
 	return hwndTV;
-} 
+}
 
 void TreeViewAddItem(HWND hwndTV, LPWSTR s, BOOL cat)
 {

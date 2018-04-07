@@ -114,12 +114,6 @@ UINT CustomTree::getPercent(HWND hWndTv)
 
 	if (!this->isCategory)
 	{
-		TVITEM item;
-		memset(&item, 0, sizeof(item));
-		item.hItem = this->getHandle();
-		item.mask = TVIF_STATE;
-		TreeView_GetItem(hWndTv, &item);
-		this->percentFilled = (((item.state >> 12) & 1) ? 100 : 0);
 		return this->percentFilled;
 	}
 
@@ -134,6 +128,12 @@ UINT CustomTree::getPercent(HWND hWndTv)
 		this->percentFilled = total / count;
 
 	return this->percentFilled;
+}
+
+void CustomTree::setPercent(HWND hWndTv, UINT percent)
+{
+	if (!this->getFirstChild())
+		this->percentFilled = percent;
 }
 
 void CustomTree::render(HWND hWndTv, HTREEITEM parentItem)

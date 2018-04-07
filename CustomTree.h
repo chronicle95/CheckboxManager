@@ -14,6 +14,7 @@ public:
 	void addChild(CustomTree *node);
 	void render(HWND hWndTv, HTREEITEM parentItem);
 	void setExpanded(BOOL state);
+	void setPercent(HWND hWndTv, UINT percent);
 	UINT getPercent(HWND hWndTv);
 	BOOL saveToFile(LPCWSTR fileName);
 	BOOL loadFromFile(LPCWSTR fileName);
