@@ -16,6 +16,7 @@ public:
 	void setExpanded(BOOL state);
 	void setPercent(UINT percent);
 	UINT getPercent();
+	LPCWSTR getCaptionP();
 	BOOL checkCategory();
 	BOOL saveToFile(LPCWSTR fileName);
 	BOOL loadFromFile(LPCWSTR fileName);

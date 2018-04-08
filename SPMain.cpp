@@ -250,9 +250,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		break;
 	case WM_PAINT:
 		hdc = BeginPaint(hWnd, &ps);
-
-		// TODO: Add any drawing code here...
-
 		EndPaint(hWnd, &ps);
 		break;
 	case WM_DESTROY:
@@ -272,6 +269,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		if (((LPNMHDR)lParam)->code == TVN_SELCHANGED)
 		{
 			currentItem = TreeView_GetSelection(hwndTV);
+			// TODO: Add proper code for check box changing event
 			CustomTree *ct = CTRoot->findNodeByHandle(currentItem);
 			if (ct && !ct->checkCategory())
 			{

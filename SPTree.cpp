@@ -40,7 +40,7 @@ void CustomTree::addChild(CustomTree *node)
 {
 	CustomTree *ctp;
 
-	if (!this->isCategory)
+	if (!this->checkCategory())
 	{
 		return;
 	}
@@ -116,24 +116,21 @@ CustomTree* CustomTree::findNodeByHandle (HTREEITEM handle)
 
 UINT CustomTree::getPercent()
 {
-	CustomTree *node;
-	UINT count, total;
+	CustomTree *node = NULL;
+	UINT count = 0, total = 0;
 
-	if (!this->checkCategory())
+	if (this->checkCategory())
 	{
-		return this->percentFilled;
-	}
+		for (node = this->getFirstChild(); node; node = node->getNext())
+		{
+			count++;
+			total += node->getPercent();
+		}
 
-	for (node = this->getFirstChild(),
-		count = 0,
-		total = 0; node; node->getNext(), count++)
-	{
-		total += node->getPercent();
-	}
-
-	if (count)
-	{
-		this->percentFilled = total / count;
+		if (count)
+		{
+			this->percentFilled = total / count;
+		}
 	}
 
 	return this->percentFilled;
@@ -142,7 +139,9 @@ UINT CustomTree::getPercent()
 void CustomTree::setPercent(UINT percent)
 {
 	if (!this->getFirstChild())
+	{
 		this->percentFilled = percent;
+	}
 }
 
 void CustomTree::render(HWND hWndTv, HTREEITEM parentItem)
@@ -161,9 +160,9 @@ void CustomTree::render(HWND hWndTv, HTREEITEM parentItem)
 		TreeView_DeleteAllItems(hWndTv);
 	}
 
-	if (this->isCategory && this->getFirstChild())
+	if (this->checkCategory() && this->getFirstChild())
 	{
-		wsprintf(tmp, L"%s (%d%%)", this->caption, this->percentFilled);
+		wsprintf(tmp, L"%s (%d%%)", this->caption, this->getPercent());
 	}
 	else
 	{
@@ -172,7 +171,7 @@ void CustomTree::render(HWND hWndTv, HTREEITEM parentItem)
 
 	tvis.item.mask = TVIF_TEXT |  TVIF_IMAGE | TVIF_SELECTEDIMAGE | TVIF_STATE | TVIF_PARAM;
 	tvis.item.stateMask = TVIS_EXPANDED;
-	if (this->isCategory)
+	if (this->checkCategory())
 	{
 		if (this->isExpanded)
 		{
@@ -189,7 +188,7 @@ void CustomTree::render(HWND hWndTv, HTREEITEM parentItem)
 	}
 	else
 	{
-		if (this->percentFilled == 100)
+		if (this->getPercent() == 100)
 		{
 			tvis.item.iImage = 3; // check box marked
 			tvis.item.iSelectedImage = 3;
@@ -266,4 +265,9 @@ BOOL CustomTree::loadFromFile(LPCWSTR fileName)
 BOOL CustomTree::checkCategory()
 {
 	return this->isCategory;
+}
+
+LPCWSTR CustomTree::getCaptionP()
+{
+	return (LPCWSTR) &this->caption;
 }
