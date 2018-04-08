@@ -60,3 +60,7 @@
 #include <altcecrt.h>
 
 // TODO: reference additional headers your program requires here
+
+#include "SPTree.h"
+#include "SPDlgAbout.h"
+#include "SPDlgPrompt.h"

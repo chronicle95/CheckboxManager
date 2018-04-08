@@ -200,11 +200,19 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\CustomTree.cpp"
+				RelativePath=".\SPDlgAbout.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\SmartProj.cpp"
+				RelativePath=".\SPDlgPrompt.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\SPMain.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\SPTree.cpp"
 				>
 			</File>
 			<File
@@ -234,15 +242,23 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath=".\CustomTree.h"
-				>
-			</File>
-			<File
 				RelativePath=".\resourceppc.h"
 				>
 			</File>
 			<File
 				RelativePath=".\SmartProj.h"
+				>
+			</File>
+			<File
+				RelativePath=".\SPDlgAbout.h"
+				>
+			</File>
+			<File
+				RelativePath=".\SPDlgPrompt.h"
+				>
+			</File>
+			<File
+				RelativePath=".\SPTree.h"
 				>
 			</File>
 			<File

@@ -1,5 +1,4 @@
 #include "StdAfx.h"
-#include "CustomTree.h"
 
 CustomTree::CustomTree(void)
 {
@@ -161,7 +160,7 @@ void CustomTree::render(HWND hWndTv, HTREEITEM parentItem)
 		wsprintf(tmp, L"%s", this->caption);
 	}
 
-	tvis.item.mask = TVIF_TEXT |  TVIF_IMAGE | TVIF_SELECTEDIMAGE | TVIF_STATE;
+	tvis.item.mask = TVIF_TEXT |  TVIF_IMAGE | TVIF_SELECTEDIMAGE | TVIF_STATE | TVIF_PARAM;
 	tvis.item.stateMask = TVIS_EXPANDED;
 	if (this->isCategory)
 	{

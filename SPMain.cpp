@@ -3,8 +3,6 @@
 
 #include "stdafx.h"
 #include "SmartProj.h"
-#include "CustomTree.h"
-
 
 #define MAX_LOADSTRING 100
 
@@ -21,8 +19,6 @@ CustomTree			*CTRoot;			// root tree item
 ATOM			MyRegisterClass(HINSTANCE, LPTSTR);
 BOOL			InitInstance(HINSTANCE, int);
 LRESULT CALLBACK	WndProc(HWND, UINT, WPARAM, LPARAM);
-INT_PTR CALLBACK	About(HWND, UINT, WPARAM, LPARAM);
-INT_PTR CALLBACK	AddBox(HWND, UINT, WPARAM, LPARAM);
 HWND TreeViewCreate(HWND);
 void TreeViewAddItem(HWND, LPWSTR, BOOL);
 
@@ -203,11 +199,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			DialogBox(g_hInst, (LPCTSTR)IDD_ABOUTBOX, hWnd, About);
 			break;
 		case IDM_ADD_ITEM:
-			DialogBox(g_hInst, (LPCTSTR)IDD_ADDBOX, hWnd, AddBox);
+			DialogBox(g_hInst, (LPCTSTR)IDD_ADDBOX, hWnd, Prompt);
 			TreeViewAddItem(hwndTV, (LPWSTR) &addedItem, false);
 			break;
 		case IDM_ADD_CATEGORY:
-			DialogBox(g_hInst, (LPCTSTR)IDD_ADDBOX, hWnd, AddBox);
+			DialogBox(g_hInst, (LPCTSTR)IDD_ADDBOX, hWnd, Prompt);
 			TreeViewAddItem(hwndTV, (LPWSTR) &addedItem, true);
 			break;
 		case ID_OPTIONS_SAVEAS:
@@ -295,78 +291,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		return DefWindowProc(hWnd, message, wParam, lParam);
 	}
 	return 0;
-}
-
-// Message handler for about box.
-INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
-{
-	switch (message)
-	{
-	case WM_INITDIALOG:
-		{
-			// Create a Done button and size it.  
-			SHINITDLGINFO shidi;
-			shidi.dwMask = SHIDIM_FLAGS;
-			shidi.dwFlags = SHIDIF_DONEBUTTON | SHIDIF_SIPDOWN | SHIDIF_SIZEDLGFULLSCREEN | SHIDIF_EMPTYMENU;
-			shidi.hDlg = hDlg;
-			SHInitDialog(&shidi);
-		}
-		return (INT_PTR)TRUE;
-
-	case WM_COMMAND:
-		if (LOWORD(wParam) == IDOK)
-		{
-			EndDialog(hDlg, LOWORD(wParam));
-			return TRUE;
-		}
-		break;
-
-	case WM_CLOSE:
-		EndDialog(hDlg, message);
-		return TRUE;
-
-	}
-	return (INT_PTR)FALSE;
-}
-
-// Message handler for node addition box
-INT_PTR CALLBACK AddBox(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
-{
-	switch (message)
-	{
-	case WM_INITDIALOG:
-		{
-			// Create a Done button and size it.  
-			SHINITDLGINFO shidi;
-			shidi.dwMask = SHIDIM_FLAGS;
-			shidi.dwFlags = SHIDIF_DONEBUTTON | SHIDIF_SIPDOWN | SHIDIF_SIZEDLGFULLSCREEN | SHIDIF_EMPTYMENU;
-			shidi.hDlg = hDlg;
-			SHInitDialog(&shidi);
-		}
-		return (INT_PTR)TRUE;
-
-	case WM_COMMAND:
-		if (LOWORD(wParam) == IDOK)
-		{
-			HWND hwEdit = GetDlgItem(hDlg, IDC_EDIT1);
-			GetWindowText(hwEdit, (LPWSTR)&addedItem, sizeof(addedItem));
-			SipShowIM(SIPF_OFF);
-			EndDialog(hDlg, LOWORD(wParam));
-			return TRUE;
-		}
-		if (HIWORD(wParam) == EN_SETFOCUS)
-		{
-			SHSipPreference(hDlg, SIP_UP);
-		}
-		break;
-
-	case WM_CLOSE:
-		SipShowIM(SIPF_OFF);
-		EndDialog(hDlg, message);
-		return TRUE;
-
-	}
-	return (INT_PTR)FALSE;
 }
 
 HWND TreeViewCreate(HWND hwndParent)
