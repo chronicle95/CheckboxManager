@@ -273,7 +273,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		{
 			currentItem = TreeView_GetSelection(hwndTV);
 			CustomTree *ct = CTRoot->findNodeByHandle(currentItem);
-			if (ct && !ct->isCategory)
+			if (ct && !ct->checkCategory())
 			{
 				ct->setPercent(100 - ct->getPercent());
 			}

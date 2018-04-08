@@ -26,6 +26,14 @@ CustomTree::CustomTree(LPWSTR caption, BOOL isCategory)
 
 CustomTree::~CustomTree(void)
 {
+	CustomTree *child, *prev_child = NULL;
+	for (child = this->getFirstChild(); child; prev_child = child, child = child->getNext())
+	{
+		if (prev_child)
+		{
+			delete prev_child;
+		}
+	}
 }
 
 void CustomTree::addChild(CustomTree *node)
@@ -111,7 +119,7 @@ UINT CustomTree::getPercent()
 	CustomTree *node;
 	UINT count, total;
 
-	if (!this->isCategory)
+	if (!this->checkCategory())
 	{
 		return this->percentFilled;
 	}
@@ -124,7 +132,9 @@ UINT CustomTree::getPercent()
 	}
 
 	if (count)
+	{
 		this->percentFilled = total / count;
+	}
 
 	return this->percentFilled;
 }
@@ -181,12 +191,12 @@ void CustomTree::render(HWND hWndTv, HTREEITEM parentItem)
 	{
 		if (this->percentFilled == 100)
 		{
-			tvis.item.iImage = 3; // file picture
+			tvis.item.iImage = 3; // check box marked
 			tvis.item.iSelectedImage = 3;
 		}
 		else
 		{
-			tvis.item.iImage = 2; // file picture
+			tvis.item.iImage = 2; // empty check box
 			tvis.item.iSelectedImage = 2;
 		}
 	}
@@ -251,4 +261,9 @@ BOOL CustomTree::loadFromFile(LPCWSTR fileName)
 
 	free (buffer);
 	return true;
+}
+
+BOOL CustomTree::checkCategory()
+{
+	return this->isCategory;
 }

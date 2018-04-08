@@ -16,12 +16,13 @@ public:
 	void setExpanded(BOOL state);
 	void setPercent(UINT percent);
 	UINT getPercent();
+	BOOL checkCategory();
 	BOOL saveToFile(LPCWSTR fileName);
 	BOOL loadFromFile(LPCWSTR fileName);
 	CustomTree *findNodeByHandle (HTREEITEM handle);
 
-	BOOL isCategory;
 private:
+	BOOL isCategory;
 	HTREEITEM handle;
 	CustomTree *firstChild;
 	CustomTree *next;
