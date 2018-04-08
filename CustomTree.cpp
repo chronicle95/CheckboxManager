@@ -107,7 +107,7 @@ CustomTree* CustomTree::findNodeByHandle (HTREEITEM handle)
 	return NULL;
 }
 
-UINT CustomTree::getPercent(HWND hWndTv)
+UINT CustomTree::getPercent()
 {
 	CustomTree *node;
 	UINT count, total;
@@ -121,7 +121,7 @@ UINT CustomTree::getPercent(HWND hWndTv)
 		count = 0,
 		total = 0; node; node->getNext(), count++)
 	{
-		total += node->getPercent(hWndTv);
+		total += node->getPercent();
 	}
 
 	if (count)
@@ -130,7 +130,7 @@ UINT CustomTree::getPercent(HWND hWndTv)
 	return this->percentFilled;
 }
 
-void CustomTree::setPercent(HWND hWndTv, UINT percent)
+void CustomTree::setPercent(UINT percent)
 {
 	if (!this->getFirstChild())
 		this->percentFilled = percent;
@@ -146,8 +146,6 @@ void CustomTree::render(HWND hWndTv, HTREEITEM parentItem)
 	// for root of the tree perform calculation and saving of the current selected node
 	if (parentItem == NULL)
 	{
-		//this->getPercent(hWndTv);
-
 		sel = this->findNodeByHandle(TreeView_GetSelection(hWndTv));
 
 		// and only then purge the view
@@ -182,8 +180,16 @@ void CustomTree::render(HWND hWndTv, HTREEITEM parentItem)
 	}
 	else
 	{
-		tvis.item.iImage = 2; // file picture
-		tvis.item.iSelectedImage = 2;
+		if (this->percentFilled == 100)
+		{
+			tvis.item.iImage = 3; // file picture
+			tvis.item.iSelectedImage = 3;
+		}
+		else
+		{
+			tvis.item.iImage = 2; // file picture
+			tvis.item.iSelectedImage = 2;
+		}
 	}
 	tvis.item.pszText = (LPWSTR) tmp;
 	tvis.hInsertAfter = TVI_LAST;

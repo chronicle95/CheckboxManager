@@ -14,6 +14,8 @@
 #define IDI_FOLDER                      130
 #define IDI_FOLDERC                     131
 #define IDI_RECORD                      134
+#define IDI_ICON1                       135
+#define IDI_RECORDC                     135
 #define IDC_STATIC_1                    201
 #define IDC_STATIC_2                    202
 #define IDC_STATIC_3                    203
@@ -37,7 +39,7 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NO_MFC                     1
-#define _APS_NEXT_RESOURCE_VALUE        135
+#define _APS_NEXT_RESOURCE_VALUE        136
 #define _APS_NEXT_COMMAND_VALUE         32777
 #define _APS_NEXT_CONTROL_VALUE         1001
 #define _APS_NEXT_SYMED_VALUE           110

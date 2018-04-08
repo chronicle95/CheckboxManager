@@ -14,18 +14,19 @@ public:
 	void addChild(CustomTree *node);
 	void render(HWND hWndTv, HTREEITEM parentItem);
 	void setExpanded(BOOL state);
-	void setPercent(HWND hWndTv, UINT percent);
-	UINT getPercent(HWND hWndTv);
+	void setPercent(UINT percent);
+	UINT getPercent();
 	BOOL saveToFile(LPCWSTR fileName);
 	BOOL loadFromFile(LPCWSTR fileName);
 	CustomTree *findNodeByHandle (HTREEITEM handle);
+
+	BOOL isCategory;
 private:
 	HTREEITEM handle;
 	CustomTree *firstChild;
 	CustomTree *next;
 	CustomTree *parent;
 	TCHAR caption[64];
-	BOOL isCategory;
 	BOOL isExpanded;
 	UINT percentFilled; // this is set to 100% for TRUE and to 0% for FALSE
 };

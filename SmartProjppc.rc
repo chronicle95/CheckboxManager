@@ -68,6 +68,7 @@ END
 IDI_FOLDER              ICON                    "folder2.ico"
 IDI_FOLDERC             ICON                    "folder1.ico"
 IDI_RECORD              ICON                    "record1.ico"
+IDI_RECORDC             ICON                    "record2.ico"
 #endif    // Russian resources
 /////////////////////////////////////////////////////////////////////////////
 

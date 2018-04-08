@@ -276,6 +276,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		if (((LPNMHDR)lParam)->code == TVN_SELCHANGED)
 		{
 			currentItem = TreeView_GetSelection(hwndTV);
+			CustomTree *ct = CTRoot->findNodeByHandle(currentItem);
+			if (ct && !ct->isCategory)
+			{
+				ct->setPercent(100 - ct->getPercent());
+			}
 		}
 		else if (((LPNMHDR)lParam)->code == TVN_ITEMEXPANDED)
 		{
@@ -378,7 +383,7 @@ HWND TreeViewCreate(HWND hwndParent)
 	hwndTV = CreateWindowEx(0,
 		WC_TREEVIEW,
 		TEXT("Projects"),
-		WS_VISIBLE | WS_CHILD | WS_BORDER | TVS_HASLINES | TVS_CHECKBOXES, 
+		WS_VISIBLE | WS_CHILD | WS_BORDER | TVS_HASLINES, 
 		0, 
 		0, 
 		rcClient.right, 
@@ -388,10 +393,11 @@ HWND TreeViewCreate(HWND hwndParent)
 		g_hInst, 
 		NULL); 
 
-	HIMAGELIST imageList = ImageList_Create(16, 16, 0, 3, 3);
+	HIMAGELIST imageList = ImageList_Create(16, 16, 0, 4, 4);
 	DRA::ImageList_AddIcon(imageList, LoadIcon(g_hInst, MAKEINTRESOURCE(IDI_FOLDER)));
 	DRA::ImageList_AddIcon(imageList, LoadIcon(g_hInst, MAKEINTRESOURCE(IDI_FOLDERC)));
 	DRA::ImageList_AddIcon(imageList, LoadIcon(g_hInst, MAKEINTRESOURCE(IDI_RECORD)));
+	DRA::ImageList_AddIcon(imageList, LoadIcon(g_hInst, MAKEINTRESOURCE(IDI_RECORDC)));
 	TreeView_SetImageList(hwndTV, imageList, TVSIL_NORMAL);
 
 	return hwndTV;
