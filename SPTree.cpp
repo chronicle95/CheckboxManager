@@ -212,6 +212,10 @@ void CustomTree::renderJSON(HANDLE hFile)
 	FileAppendString(hFile, L"','children':{");
 	for (node = this->getFirstChild(); node; node = node->getNext())
 	{
+		if (node != this->getFirstChild())
+		{
+			FileAppendString(hFile, L",");
+		}
 		node->renderJSON(hFile);
 	}
 	FileAppendString(hFile, L"}}");
