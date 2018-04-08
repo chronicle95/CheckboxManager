@@ -12,7 +12,9 @@ public:
 	HTREEITEM getHandle();
 	void setParent(CustomTree *node);
 	void addChild(CustomTree *node);
-	void render(HWND hWndTv, HTREEITEM parentItem);
+	void updateTreeView(HWND hWndTv);
+	void renderTreeView(HWND hWndTv, HTREEITEM parentItem);
+	void renderJSON(HANDLE hFile);
 	void setExpanded(BOOL state);
 	void setPercent(UINT percent);
 	UINT getPercent();
@@ -31,4 +33,6 @@ private:
 	TCHAR caption[64];
 	BOOL isExpanded;
 	UINT percentFilled; // this is set to 100% for TRUE and to 0% for FALSE
+
+	void prepareItem(TVITEM *item);
 };

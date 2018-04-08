@@ -145,7 +145,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 	// Work on a tree view
 	hwndTV = TreeViewCreate(hWnd);
 	CTRoot = new CustomTree(L"Project Root", true);
-	CTRoot->render(hwndTV, NULL);
+	CTRoot->renderTreeView(hwndTV, NULL);
 	TreeView_Select(hwndTV, CTRoot->getHandle(), TVGN_CARET);
 
 	ShowWindow(hWnd, nCmdShow);
@@ -181,7 +181,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	ofn.lpstrFile = name;
 	ofn.lpstrFile[0] = '\0';
 	ofn.nMaxFile = sizeof(name);
-	ofn.lpstrFilter = L"All\0*.*\0JSON file\0*.JSON\0";
+	ofn.lpstrFilter = L"JSON file\0*.JSON\0";
 	ofn.nFilterIndex = 1;
 	ofn.lpstrFileTitle = NULL;
 	ofn.nMaxFileTitle = 0;
@@ -273,7 +273,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			CustomTree *ct = CTRoot->findNodeByHandle(currentItem);
 			if (ct && !ct->checkCategory())
 			{
-				ct->setPercent(100 - ct->getPercent());
+				UINT newPercent = 100 - ct->getPercent();
+				ct->setPercent(newPercent);
+				CTRoot->updateTreeView(hwndTV);
 			}
 		}
 		else if (((LPNMHDR)lParam)->code == TVN_ITEMEXPANDED)
@@ -281,7 +283,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			LPNMTREEVIEW tv;
 			tv = (LPNMTREEVIEW) lParam;
 			CTRoot->findNodeByHandle(currentItem)->setExpanded(tv->action == TVE_EXPAND);
-			CTRoot->render(hwndTV, NULL);
+			CTRoot->updateTreeView(hwndTV);
 		}
 		break;
 
@@ -337,5 +339,5 @@ void TreeViewAddItem(HWND hwndTV, LPWSTR s, BOOL cat)
 	{
 		CTRoot->addChild(newNode);
 	}
-	CTRoot->render(hwndTV, NULL);
+	CTRoot->renderTreeView(hwndTV, NULL);
 }

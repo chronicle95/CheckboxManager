@@ -114,6 +114,8 @@ CustomTree* CustomTree::findNodeByHandle (HTREEITEM handle)
 	return NULL;
 }
 
+// Calculates percent value for category
+// and returns it, or just returns the value for plain records
 UINT CustomTree::getPercent()
 {
 	CustomTree *node = NULL;
@@ -144,9 +146,9 @@ void CustomTree::setPercent(UINT percent)
 	}
 }
 
-void CustomTree::render(HWND hWndTv, HTREEITEM parentItem)
+// Draws TREEVIEW item hierarchy from scratch
+void CustomTree::renderTreeView(HWND hWndTv, HTREEITEM parentItem)
 {
-	TCHAR tmp[64];
 	TVINSERTSTRUCT tvis = {0};
 	CustomTree *node;
 	CustomTree *sel = NULL;
@@ -160,46 +162,9 @@ void CustomTree::render(HWND hWndTv, HTREEITEM parentItem)
 		TreeView_DeleteAllItems(hWndTv);
 	}
 
-	if (this->checkCategory() && this->getFirstChild())
-	{
-		wsprintf(tmp, L"%s (%d%%)", this->caption, this->getPercent());
-	}
-	else
-	{
-		wsprintf(tmp, L"%s", this->caption);
-	}
+	// Set proper images and captions
+	this->prepareItem(&(tvis.item));
 
-	tvis.item.mask = TVIF_TEXT |  TVIF_IMAGE | TVIF_SELECTEDIMAGE | TVIF_STATE | TVIF_PARAM;
-	tvis.item.stateMask = TVIS_EXPANDED;
-	if (this->checkCategory())
-	{
-		if (this->isExpanded)
-		{
-			tvis.item.state = TVIS_EXPANDED;
-			tvis.item.iImage = 0; // folder picture
-			tvis.item.iSelectedImage = 0;
-		}
-		else
-		{
-			tvis.item.state = 0;
-			tvis.item.iImage = 1; // folder picture
-			tvis.item.iSelectedImage = 1;
-		}
-	}
-	else
-	{
-		if (this->getPercent() == 100)
-		{
-			tvis.item.iImage = 3; // check box marked
-			tvis.item.iSelectedImage = 3;
-		}
-		else
-		{
-			tvis.item.iImage = 2; // empty check box
-			tvis.item.iSelectedImage = 2;
-		}
-	}
-	tvis.item.pszText = (LPWSTR) tmp;
 	tvis.hInsertAfter = TVI_LAST;
 	tvis.hParent = parentItem ? parentItem : TVI_ROOT;
 
@@ -207,13 +172,43 @@ void CustomTree::render(HWND hWndTv, HTREEITEM parentItem)
 
 	for (node = this->getFirstChild(); node; node = node->getNext())
 	{
-		node->render(hWndTv, this->handle);
+		node->renderTreeView(hWndTv, this->handle);
 	}
 
 	if (sel)
 	{
 		TreeView_Select(hWndTv, sel->getHandle(), TVGN_CARET);
 	}
+}
+
+// Writes a string to the end of an ALREADY OPENED file
+static void FileAppendString(HANDLE hFile, LPCWSTR text)
+{
+	DWORD bytesWritten;
+	SetFilePointer(hFile, 0, NULL, FILE_END);
+	WriteFile(hFile, (LPCVOID)text, wcslen(text), (LPDWORD)&bytesWritten, NULL);
+}
+
+void CustomTree::renderJSON(HANDLE hFile)
+{
+	TCHAR buf[10];
+	CustomTree *node = NULL;
+	FileAppendString(hFile, L"{");
+	FileAppendString(hFile, L"'caption':'");
+	FileAppendString(hFile, this->getCaptionP());
+	FileAppendString(hFile, L"','type':'");
+	FileAppendString(hFile, this->checkCategory() ? L"category" : L"record");
+	FileAppendString(hFile, L"','percent':'");
+	wsprintf((LPWSTR)&buf, L"%d", this->getPercent());
+	FileAppendString(hFile, (LPCWSTR)&buf);
+	FileAppendString(hFile, L"','expanded':'");
+	FileAppendString(hFile, this->isExpanded ? L"yes" : L"no");
+	FileAppendString(hFile, L"','children':{");
+	for (node = this->getFirstChild(); node; node = node->getNext())
+	{
+		node->renderJSON(hFile);
+	}
+	FileAppendString(hFile, L"}}");
 }
 
 BOOL CustomTree::saveToFile(LPCWSTR fileName)
@@ -225,7 +220,7 @@ BOOL CustomTree::saveToFile(LPCWSTR fileName)
 		return false;
 	}
 
-	// TODO: serialize to file
+	this->renderJSON(hFile);
 
 	CloseHandle(hFile);
 	return true;
@@ -270,4 +265,76 @@ BOOL CustomTree::checkCategory()
 LPCWSTR CustomTree::getCaptionP()
 {
 	return (LPCWSTR) &this->caption;
+}
+
+// Refreshes TREEVIEW according to the model
+void CustomTree::updateTreeView(HWND hWndTv)
+{
+	TVITEM item;
+	CustomTree *node;
+
+	memset(&item, 0, sizeof(item));
+
+	item.hItem = this->getHandle();
+	item.mask = TVIF_TEXT;
+	TreeView_GetItem(hWndTv, &item);
+	this->prepareItem(&item);
+	TreeView_SetItem(hWndTv, &item);
+
+	for (node = this->getFirstChild(); node; node = node->getNext())
+	{
+		node->updateTreeView(hWndTv);
+	}
+}
+
+// Fills in TVITEM structure for TREEVIEW
+// using internal model information
+void CustomTree::prepareItem(TVITEM *item)
+{
+	if (item->pszText == NULL)
+	{
+		item->pszText = (LPWSTR) malloc(64 * sizeof(TCHAR));
+	}
+
+	item->mask = TVIF_IMAGE | TVIF_SELECTEDIMAGE | TVIF_TEXT | TVIF_STATE;
+
+	if (this->checkCategory() && this->getFirstChild())
+	{
+		wsprintf(item->pszText, L"%s (%d%%)", this->caption, this->getPercent());
+	}
+	else
+	{
+		wsprintf(item->pszText, L"%s", this->caption);
+	}
+
+	item->mask = TVIF_TEXT |  TVIF_IMAGE | TVIF_SELECTEDIMAGE | TVIF_STATE;
+	item->stateMask = TVIS_EXPANDED;
+	if (this->checkCategory())
+	{
+		if (this->isExpanded)
+		{
+			item->state = TVIS_EXPANDED;
+			item->iImage = 0; // folder picture
+			item->iSelectedImage = 0;
+		}
+		else
+		{
+			item->state = 0;
+			item->iImage = 1; // folder picture
+			item->iSelectedImage = 1;
+		}
+	}
+	else
+	{
+		if (this->getPercent() == 100)
+		{
+			item->iImage = 3; // check box marked
+			item->iSelectedImage = 3;
+		}
+		else
+		{
+			item->iImage = 2; // empty check box
+			item->iSelectedImage = 2;
+		}
+	}
 }
