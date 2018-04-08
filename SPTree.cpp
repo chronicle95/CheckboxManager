@@ -127,6 +127,12 @@ UINT CustomTree::getPercent()
 		{
 			count++;
 			total += node->getPercent();
+
+			// do not count empty categories
+			if (node->checkCategory() && !node->getFirstChild())
+			{
+				count--;
+			}
 		}
 
 		if (count)
