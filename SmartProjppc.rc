@@ -94,8 +94,8 @@ CAPTION "About SmartProj"
 FONT 8, "MS Sans Serif"
 BEGIN
     ICON            IDI_SMARTPROJ,IDC_STATIC_1,12,12,20,20,SS_REALSIZEIMAGE
-    LTEXT           "SmartProj Version 1.3a",IDC_STATIC_2,12,36,83,8,SS_NOPREFIX
-    LTEXT           "Copyright (C) chronicle95 2018",IDC_STATIC_3,12,48,124,8
+    LTEXT           "SmartProj Version 1.4a",IDC_STATIC_2,12,36,83,8,SS_NOPREFIX
+    LTEXT           "Copyright (C) chronicle95, Serj B.\n2018",IDC_STATIC_3,12,48,124,19
 END
 
 IDD_ABOUTBOX_WIDE DIALOG  0, 0, 210, 129
@@ -104,9 +104,9 @@ EXSTYLE 0x80000000L
 CAPTION "About SmartProj"
 FONT 8, "MS Sans Serif"
 BEGIN
-    ICON            IDI_SMARTPROJ,IDC_STATIC_1,12,12,20,20,SS_REALSIZEIMAGE
-    LTEXT           "SmartProj Version 1.3a",IDC_STATIC_2,48,12,83,8,SS_NOPREFIX
-    LTEXT           "Copyright (C) chronicle95 2018",IDC_STATIC_3,48,24,130,8
+    ICON            IDI_SMARTPROJ,IDC_STATIC_1,12,12,21,20,SS_REALSIZEIMAGE
+    LTEXT           "SmartProj Version 1.4a",IDC_STATIC_2,48,12,83,8,SS_NOPREFIX
+    LTEXT           "Copyright (C) chronicle95, Serj B.  2018",IDC_STATIC_3,48,24,130,8
 END
 
 
@@ -129,7 +129,7 @@ BEGIN
     IDD_ABOUTBOX_WIDE, DIALOG
     BEGIN
         LEFTMARGIN, 7
-        RIGHTMARGIN, 203
+        RIGHTMARGIN, 202
         TOPMARGIN, 7
         BOTTOMMARGIN, 122
     END
