@@ -225,13 +225,17 @@ BOOL CustomTree::loadFromFile(LPCWSTR fileName)
 	}
 
 	DWORD fileSize = GetFileSize(hFile, NULL);
-	TCHAR *buffer = (TCHAR*) malloc(fileSize);
+	char *buffer = (char*) malloc(fileSize + 1);
+	TCHAR *wcstr = new TCHAR[fileSize + 1]; // to be sure
 
-	if (!buffer)
+	if (!buffer || !wcstr)
 	{
 		CloseHandle(hFile);
 		return false;
 	}
+
+	memset(buffer, 0, fileSize + 1);
+	memset(wcstr, 0, fileSize + 1);
 
 	if (ReadFile(hFile, (LPVOID) buffer, fileSize, NULL, NULL) == false)
 	{
@@ -240,9 +244,11 @@ BOOL CustomTree::loadFromFile(LPCWSTR fileName)
 	}
 	CloseHandle(hFile);
 
-	this->parseJSON(buffer);
+	MultiByteToWideChar(CP_UTF8, 0, buffer, fileSize, wcstr, fileSize);
+	this->parseJSON(wcstr);
 
 	free (buffer);
+	delete wcstr;
 	return true;
 }
 
