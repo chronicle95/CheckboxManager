@@ -190,9 +190,14 @@ void CustomTree::renderTreeView(HWND hWndTv, HTREEITEM parentItem)
 // Writes a string to the end of an ALREADY OPENED file
 static void FileAppendString(HANDLE hFile, LPCWSTR text)
 {
+	UINT sz = wcslen(text) * 4; // for sure
+	char *buf = (char *) malloc(sz);
+	memset(buf, 0, sz);
 	DWORD bytesWritten;
 	SetFilePointer(hFile, 0, NULL, FILE_END);
-	WriteFile(hFile, (LPCVOID)text, wcslen(text), (LPDWORD)&bytesWritten, NULL);
+	WideCharToMultiByte(CP_UTF8, 0, text, wcslen(text), (LPSTR)buf, sz, NULL, NULL);
+	WriteFile(hFile, (LPCVOID)buf, strlen(buf), (LPDWORD)&bytesWritten, NULL);
+	free(buf);
 }
 
 BOOL CustomTree::saveToFile(LPCWSTR fileName)
