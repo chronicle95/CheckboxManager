@@ -9,7 +9,7 @@ CustomTree::CustomTree(void)
 	handle = NULL;
 	next = NULL;
 	firstChild = NULL;
-	wcscpy_s(this->caption, sizeof(this->caption), L"Dummy");
+	wcscpy_s(this->caption, sizeof(this->caption)/sizeof(TCHAR), L"Dummy");
 }
 
 CustomTree::CustomTree(LPCWSTR caption, BOOL isCategory)
@@ -21,7 +21,7 @@ CustomTree::CustomTree(LPCWSTR caption, BOOL isCategory)
 	this->handle = NULL;
 	this->next = NULL;
 	this->firstChild = NULL;
-	wcscpy_s(this->caption, sizeof(this->caption), caption);
+	wcscpy_s(this->caption, sizeof(this->caption)/sizeof(TCHAR), caption);
 }
 
 CustomTree::~CustomTree(void)
@@ -381,13 +381,13 @@ UINT CustomTree::parseJSON(LPCWSTR buffer)
 		{
 			buffer++;
 			i = 0;
+			memset(tmp, 0, sizeof(tmp));
 			while (*buffer != '\'')
 			{
 				tmp[i] = *buffer;
 				buffer++;
 				i++;
 			}
-			tmp[i] = '\0';
 
 			// expect for semicolon
 			buffer++;
@@ -396,8 +396,10 @@ UINT CustomTree::parseJSON(LPCWSTR buffer)
 			// if there is another string, read it
 			buffer++;
 			i = 0;
+			memset(tmp2, 0, sizeof(tmp2));
 			if (*buffer == '\'')
 			{
+				buffer++;
 				while (*buffer != '\'')
 				{
 					tmp2[i] = *buffer;
@@ -405,12 +407,11 @@ UINT CustomTree::parseJSON(LPCWSTR buffer)
 					buffer++;
 				}
 			}
-			tmp2[i] = '\0';
 
 			// now check the buffer value
 			if (!wcscmp(tmp, L"caption"))
 			{
-				wcscpy_s(this->caption, wcslen(tmp2), tmp2);
+				wcscpy_s(this->caption, sizeof(this->caption)/sizeof(TCHAR), tmp2);
 			}
 			else if (!wcscmp(tmp, L"type"))
 			{
