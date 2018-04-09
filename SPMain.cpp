@@ -180,7 +180,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	ofn.hwndOwner = mainWin;
 	ofn.lpstrFile = name;
 	ofn.lpstrFile[0] = '\0';
-	ofn.nMaxFile = sizeof(name);
+	ofn.nMaxFile = sizeof(name)/sizeof(TCHAR);
 	ofn.lpstrFilter = L"JSON file\0*.JSON\0Text file\0*.TXT\0";
 	ofn.nFilterIndex = 1;
 	ofn.lpstrFileTitle = NULL;
