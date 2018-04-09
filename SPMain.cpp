@@ -181,7 +181,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	ofn.lpstrFile = name;
 	ofn.lpstrFile[0] = '\0';
 	ofn.nMaxFile = sizeof(name);
-	ofn.lpstrFilter = L"JSON file\0*.JSON\0";
+	ofn.lpstrFilter = L"JSON file\0*.JSON\0Text file\0*.TXT\0";
 	ofn.nFilterIndex = 1;
 	ofn.lpstrFileTitle = NULL;
 	ofn.nMaxFileTitle = 0;

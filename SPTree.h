@@ -5,7 +5,7 @@ class CustomTree
 {
 public:
 	CustomTree(void);
-	CustomTree(LPWSTR caption, BOOL isCategory);
+	CustomTree(LPCWSTR caption, BOOL isCategory);
 	~CustomTree(void);
 	CustomTree *getFirstChild();
 	CustomTree *getNext();

@@ -12,7 +12,7 @@ CustomTree::CustomTree(void)
 	wcscpy_s(this->caption, sizeof(this->caption), L"Dummy");
 }
 
-CustomTree::CustomTree(LPWSTR caption, BOOL isCategory)
+CustomTree::CustomTree(LPCWSTR caption, BOOL isCategory)
 {
 	this->isCategory = isCategory;
 	this->isExpanded = true;
