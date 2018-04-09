@@ -215,10 +215,18 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		case ID_OPTIONS_OPEN:
 			if (GetOpenFileName(&ofn) == TRUE)
 			{
-				delete CTRoot;
-				CTRoot = new CustomTree();
-				CTRoot->loadFromFile(ofn.lpstrFile);
-				CTRoot->renderTreeView(hwndTV, NULL);
+				CustomTree *newCTRoot = new CustomTree();
+				if (newCTRoot->loadFromFile(ofn.lpstrFile))
+				{
+					newCTRoot->renderTreeView(hwndTV, NULL);
+					delete CTRoot;
+					CTRoot = newCTRoot;
+				}
+				else
+				{
+					MessageBox(mainWin, L"Failed to load", L"Error", MB_OK | MB_ICONERROR);
+					delete newCTRoot;
+				}
 			}
 			break;
 		case IDM_OK:

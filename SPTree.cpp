@@ -245,7 +245,12 @@ BOOL CustomTree::loadFromFile(LPCWSTR fileName)
 	CloseHandle(hFile);
 
 	MultiByteToWideChar(CP_UTF8, 0, buffer, fileSize, wcstr, fileSize);
-	this->parseJSON(wcstr);
+	if (this->parseJSON(wcstr, fileSize) == 0)
+	{
+		free (buffer);
+		delete wcstr;
+		return false;
+	}
 
 	free (buffer);
 	delete wcstr;
@@ -363,7 +368,7 @@ void CustomTree::renderJSON(HANDLE hFile)
 // This method will parse a given string for object fields
 // and, presumably, children.
 // RETURNS the number of characters parsed
-UINT CustomTree::parseJSON(LPCWSTR buffer)
+UINT CustomTree::parseJSON(LPCWSTR buffer, UINT maxSz)
 {
 	LPCWSTR start = buffer;
 	TCHAR tmp[64];
@@ -374,7 +379,7 @@ UINT CustomTree::parseJSON(LPCWSTR buffer)
 	if (*buffer != '{') return 0;
 
 	buffer++;
-	while (*buffer != '}')
+	while (*buffer != '}' && ((buffer-start) < maxSz))
 	{
 		// option is met, read into temp
 		if (*buffer == '\'')
@@ -434,12 +439,15 @@ UINT CustomTree::parseJSON(LPCWSTR buffer)
 				while (1)
 				{
 					buffer++;
+					if (*buffer == ',') buffer++;
 
 					// allocate node
 					CustomTree *node = new CustomTree();
-					if (node->parseJSON(buffer) != 0)
+					UINT parsed = node->parseJSON(buffer, maxSz);
+					if (parsed != 0)
 					{
 						this->addChild(node);
+						buffer += parsed;
 					}
 					else
 					{

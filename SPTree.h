@@ -15,7 +15,7 @@ public:
 	void updateTreeView(HWND hWndTv);
 	void renderTreeView(HWND hWndTv, HTREEITEM parentItem);
 	void renderJSON(HANDLE hFile);
-	UINT parseJSON(LPCWSTR buffer);
+	UINT parseJSON(LPCWSTR buffer, UINT maxSz);
 	void setExpanded(BOOL state);
 	void setPercent(UINT percent);
 	UINT getPercent();
