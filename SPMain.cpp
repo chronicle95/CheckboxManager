@@ -215,7 +215,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		case ID_OPTIONS_OPEN:
 			if (GetOpenFileName(&ofn) == TRUE)
 			{
+				delete CTRoot;
+				CTRoot = new CustomTree();
 				CTRoot->loadFromFile(ofn.lpstrFile);
+				CTRoot->renderTreeView(hwndTV, NULL);
 			}
 			break;
 		case IDM_OK:

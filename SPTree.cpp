@@ -195,32 +195,6 @@ static void FileAppendString(HANDLE hFile, LPCWSTR text)
 	WriteFile(hFile, (LPCVOID)text, wcslen(text), (LPDWORD)&bytesWritten, NULL);
 }
 
-void CustomTree::renderJSON(HANDLE hFile)
-{
-	TCHAR buf[10];
-	CustomTree *node = NULL;
-	FileAppendString(hFile, L"{");
-	FileAppendString(hFile, L"'caption':'");
-	FileAppendString(hFile, this->getCaptionP());
-	FileAppendString(hFile, L"','type':'");
-	FileAppendString(hFile, this->checkCategory() ? L"category" : L"record");
-	FileAppendString(hFile, L"','percent':'");
-	wsprintf((LPWSTR)&buf, L"%d", this->getPercent());
-	FileAppendString(hFile, (LPCWSTR)&buf);
-	FileAppendString(hFile, L"','expanded':'");
-	FileAppendString(hFile, this->isExpanded ? L"yes" : L"no");
-	FileAppendString(hFile, L"','children':{");
-	for (node = this->getFirstChild(); node; node = node->getNext())
-	{
-		if (node != this->getFirstChild())
-		{
-			FileAppendString(hFile, L",");
-		}
-		node->renderJSON(hFile);
-	}
-	FileAppendString(hFile, L"}}");
-}
-
 BOOL CustomTree::saveToFile(LPCWSTR fileName)
 {
 	HANDLE hFile = CreateFile(fileName, GENERIC_WRITE, 0, NULL,
@@ -261,7 +235,7 @@ BOOL CustomTree::loadFromFile(LPCWSTR fileName)
 	}
 	CloseHandle(hFile);
 
-	// TODO: deserialize buffer
+	this->parseJSON(buffer);
 
 	free (buffer);
 	return true;
@@ -347,4 +321,131 @@ void CustomTree::prepareItem(TVITEM *item)
 			item->iSelectedImage = 2;
 		}
 	}
+}
+
+void CustomTree::renderJSON(HANDLE hFile)
+{
+	TCHAR buf[10];
+	CustomTree *node = NULL;
+	FileAppendString(hFile, L"{");
+	FileAppendString(hFile, L"'caption':'");
+	FileAppendString(hFile, this->getCaptionP());
+	FileAppendString(hFile, L"','type':'");
+	FileAppendString(hFile, this->checkCategory() ? L"category" : L"record");
+	FileAppendString(hFile, L"','percent':'");
+	wsprintf((LPWSTR)buf, L"%d", this->getPercent());
+	FileAppendString(hFile, (LPCWSTR)&buf);
+	FileAppendString(hFile, L"','expanded':'");
+	FileAppendString(hFile, this->isExpanded ? L"yes" : L"no");
+	FileAppendString(hFile, L"','children':{");
+	for (node = this->getFirstChild(); node; node = node->getNext())
+	{
+		if (node != this->getFirstChild())
+		{
+			FileAppendString(hFile, L",");
+		}
+		node->renderJSON(hFile);
+	}
+	FileAppendString(hFile, L"}}");
+}
+
+// This method will parse a given string for object fields
+// and, presumably, children.
+// RETURNS the number of characters parsed
+UINT CustomTree::parseJSON(LPCWSTR buffer)
+{
+	LPCWSTR start = buffer;
+	TCHAR tmp[64];
+	TCHAR tmp2[64];
+	UINT i;
+
+	// do nothing if no JSON met
+	if (*buffer != '{') return 0;
+
+	buffer++;
+	while (*buffer != '}')
+	{
+		// option is met, read into temp
+		if (*buffer == '\'')
+		{
+			buffer++;
+			i = 0;
+			while (*buffer != '\'')
+			{
+				tmp[i] = *buffer;
+				buffer++;
+				i++;
+			}
+			tmp[i] = '\0';
+
+			// expect for semicolon
+			buffer++;
+			if (*buffer != ':') return 0;
+
+			// if there is another string, read it
+			buffer++;
+			i = 0;
+			if (*buffer == '\'')
+			{
+				while (*buffer != '\'')
+				{
+					tmp2[i] = *buffer;
+					i++;
+					buffer++;
+				}
+			}
+			tmp2[i] = '\0';
+
+			// now check the buffer value
+			if (!wcscmp(tmp, L"caption"))
+			{
+				wcscpy_s(this->caption, wcslen(tmp2), tmp2);
+			}
+			else if (!wcscmp(tmp, L"type"))
+			{
+				this->isCategory = !wcscmp(tmp2, L"category");
+			}
+			else if (!wcscmp(tmp, L"percent"))
+			{
+				this->percentFilled = _wtoi(tmp2);
+			}
+			else if (!wcscmp(tmp, L"expanded"))
+			{
+				this->setExpanded(!wcscmp(tmp2, L"yes"));
+			}
+			else if (!wcscmp(tmp, L"children"))
+			{
+				// no list as value, fail
+				if (*buffer != '{') return 0;
+
+				// parse list
+				while (1)
+				{
+					buffer++;
+
+					// allocate node
+					CustomTree *node = new CustomTree();
+					if (node->parseJSON(buffer) != 0)
+					{
+						this->addChild(node);
+					}
+					else
+					{
+						delete node;
+						break;
+					}
+				}
+
+				if (*buffer != '}') return 0;
+			}
+			else
+			{
+				// unknown option, fail
+				return 0;
+			}
+		}
+		buffer++;
+	}
+
+	return (buffer-start);
 }
