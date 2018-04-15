@@ -15,7 +15,7 @@ HINSTANCE			g_hInst;			// current instance
 HWND				g_hWndMenuBar;		// menu bar handle
 HWND				hwndTV;				// tree view handle
 HWND				mainWin;			// main window handle
-TCHAR				addedItem[64];		// name of item to add			
+TCHAR				addedItem[64];		// name of item to add, is used to communicate with the dialog
 HTREEITEM			currentItem = NULL;	// selected item
 CustomTree			*CTRoot;			// root tree item
 
@@ -321,7 +321,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			InsertMenu(hPopupMenu, 0, MF_BYPOSITION | MF_STRING, CM_RENAME, L"Rename");
 			InsertMenu(hPopupMenu, 0, MF_BYPOSITION | MF_STRING, CM_ADD_ITEM, L"Add item");
 			SetForegroundWindow(mainWin);
-			UINT sel = TrackPopupMenu(hPopupMenu, TPM_BOTTOMALIGN | TPM_LEFTALIGN | TPM_RETURNCMD,
+			UINT sel = TrackPopupMenu(hPopupMenu, TPM_TOPALIGN | TPM_LEFTALIGN | TPM_RETURNCMD,
 									  GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam), 0, mainWin, NULL);
 
 			ProcessContextMenu(sel, ct);
@@ -375,7 +375,14 @@ void TreeViewAddItem(HWND hwndTV, LPWSTR s, BOOL cat)
 	CustomTree *newNode = new CustomTree(s, cat);
 	if (node)
 	{
-		node->addChild(newNode);
+		if (node->checkCategory())
+		{
+			node->addChild(newNode);
+		}
+		else
+		{
+			node->getParent()->addChild(newNode);
+		}
 	}
 	else
 	{

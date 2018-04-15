@@ -11,6 +11,7 @@ public:
 	CustomTree *getNext();
 	HTREEITEM getHandle();
 	void setParent(CustomTree *node);
+	CustomTree *getParent();
 	void addChild(CustomTree *node);
 	void updateTreeView(HWND hWndTv);
 	void renderTreeView(HWND hWndTv, HTREEITEM parentItem);

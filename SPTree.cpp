@@ -482,3 +482,8 @@ void CustomTree::setCaption(LPCWSTR caption)
 {
 	wcscpy_s(this->caption, sizeof(this->caption)/sizeof(TCHAR), caption);
 }
+
+CustomTree *CustomTree::getParent()
+{
+	return this->parent;
+}
