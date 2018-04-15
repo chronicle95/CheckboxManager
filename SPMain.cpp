@@ -204,10 +204,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			DialogBox(g_hInst, (LPCTSTR)IDD_ABOUTBOX, hWnd, About);
 			break;
 		case IDM_ADD_ITEM:
+			wcscpy_s(addedItem, sizeof(addedItem)/sizeof(TCHAR), L"Empty");
 			DialogBox(g_hInst, (LPCTSTR)IDD_ADDBOX, hWnd, Prompt);
 			TreeViewAddItem(hwndTV, (LPWSTR) &addedItem, false);
 			break;
 		case IDM_ADD_CATEGORY:
+			wcscpy_s(addedItem, sizeof(addedItem)/sizeof(TCHAR), L"Empty");
 			DialogBox(g_hInst, (LPCTSTR)IDD_ADDBOX, hWnd, Prompt);
 			TreeViewAddItem(hwndTV, (LPWSTR) &addedItem, true);
 			break;
@@ -387,10 +389,12 @@ void ProcessContextMenu(UINT option, CustomTree *item)
 	switch(option)
 	{
 	case CM_ADD_ITEM:
+		wcscpy_s(addedItem, sizeof(addedItem)/sizeof(TCHAR), L"Empty");
 		DialogBox(g_hInst, (LPCTSTR)IDD_ADDBOX, mainWin, Prompt);
 		TreeViewAddItem(hwndTV, (LPWSTR) &addedItem, false);
 		break;
 	case CM_RENAME:
+		wcscpy_s(addedItem, sizeof(addedItem)/sizeof(TCHAR), item->getCaptionP());
 		DialogBox(g_hInst, (LPCTSTR)IDD_ADDBOX, mainWin, Prompt);
 		item->setCaption(addedItem);
 		CTRoot->updateTreeView(hwndTV);

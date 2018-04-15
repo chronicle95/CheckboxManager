@@ -16,6 +16,9 @@ INT_PTR CALLBACK Prompt(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 			shidi.dwFlags = SHIDIF_DONEBUTTON | SHIDIF_SIPDOWN | SHIDIF_SIZEDLGFULLSCREEN | SHIDIF_EMPTYMENU;
 			shidi.hDlg = hDlg;
 			SHInitDialog(&shidi);
+
+			HWND hwEdit = GetDlgItem(hDlg, IDC_EDIT1);
+			SetWindowText(hwEdit, (LPCWSTR)&addedItem);
 		}
 		return (INT_PTR)TRUE;
 
