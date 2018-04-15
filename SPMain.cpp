@@ -7,8 +7,9 @@
 #define MAX_LOADSTRING 100
 
 #define CM_ADD_ITEM 1
-#define CM_RENAME	2
-#define CM_REMOVE	3
+#define CM_ADD_CAT  2
+#define CM_RENAME	3
+#define CM_REMOVE	4
 
 // Global Variables:
 HINSTANCE			g_hInst;			// current instance
@@ -25,7 +26,8 @@ BOOL			InitInstance(HINSTANCE, int);
 LRESULT CALLBACK	WndProc(HWND, UINT, WPARAM, LPARAM);
 HWND TreeViewCreate(HWND);
 void TreeViewAddItem(HWND, LPWSTR, BOOL);
-void ProcessContextMenu(UINT, CustomTree *);
+UINT ContextMenuCreate(UINT, UINT);
+void ContextMenuProcess(UINT, CustomTree *);
 
 int WINAPI WinMain(HINSTANCE hInstance,
 				   HINSTANCE hPrevInstance,
@@ -316,15 +318,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 		if (ct)
 		{
-			HMENU hPopupMenu = CreatePopupMenu();
-			InsertMenu(hPopupMenu, 0, MF_BYPOSITION | MF_STRING, CM_REMOVE, L"Remove");
-			InsertMenu(hPopupMenu, 0, MF_BYPOSITION | MF_STRING, CM_RENAME, L"Rename");
-			InsertMenu(hPopupMenu, 0, MF_BYPOSITION | MF_STRING, CM_ADD_ITEM, L"Add item");
-			SetForegroundWindow(mainWin);
-			UINT sel = TrackPopupMenu(hPopupMenu, TPM_TOPALIGN | TPM_LEFTALIGN | TPM_RETURNCMD,
-									  GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam), 0, mainWin, NULL);
-
-			ProcessContextMenu(sel, ct);
+			ContextMenuProcess(ContextMenuCreate(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)), ct);
 		}
 	}
 
@@ -391,14 +385,30 @@ void TreeViewAddItem(HWND hwndTV, LPWSTR s, BOOL cat)
 	CTRoot->renderTreeView(hwndTV, NULL);
 }
 
-void ProcessContextMenu(UINT option, CustomTree *item)
+UINT ContextMenuCreate(UINT x, UINT y)
 {
+	HMENU hPopupMenu = CreatePopupMenu();
+	InsertMenu(hPopupMenu, 0, MF_BYPOSITION | MF_STRING, CM_REMOVE,   L"Remove");
+	InsertMenu(hPopupMenu, 0, MF_BYPOSITION | MF_STRING, CM_RENAME,   L"Rename");
+	InsertMenu(hPopupMenu, 0, MF_BYPOSITION | MF_STRING, CM_ADD_CAT,  L"Add category");
+	InsertMenu(hPopupMenu, 0, MF_BYPOSITION | MF_STRING, CM_ADD_ITEM, L"Add item");
+	SetForegroundWindow(mainWin);
+	return TrackPopupMenu(hPopupMenu, TPM_TOPALIGN | TPM_LEFTALIGN | TPM_RETURNCMD,
+						  x, y, 0, mainWin, NULL);
+}
+
+void ContextMenuProcess(UINT option, CustomTree *item)
+{
+	wcscpy_s(addedItem, sizeof(addedItem)/sizeof(TCHAR), L"Empty");
 	switch(option)
 	{
 	case CM_ADD_ITEM:
-		wcscpy_s(addedItem, sizeof(addedItem)/sizeof(TCHAR), L"Empty");
 		DialogBox(g_hInst, (LPCTSTR)IDD_ADDBOX, mainWin, Prompt);
 		TreeViewAddItem(hwndTV, (LPWSTR) &addedItem, false);
+		break;
+	case CM_ADD_CAT:
+		DialogBox(g_hInst, (LPCTSTR)IDD_ADDBOX, mainWin, Prompt);
+		TreeViewAddItem(hwndTV, (LPWSTR) &addedItem, true);
 		break;
 	case CM_RENAME:
 		wcscpy_s(addedItem, sizeof(addedItem)/sizeof(TCHAR), item->getCaptionP());
