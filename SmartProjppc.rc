@@ -225,7 +225,7 @@ END
 
 STRINGTABLE 
 BEGIN
-    IDS_OK                  "Okay"
+    IDS_OK                  "Close"
     IDS_HELP                "Options"
 END
 

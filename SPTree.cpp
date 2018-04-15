@@ -469,3 +469,16 @@ UINT CustomTree::parseJSON(LPCWSTR buffer, UINT maxSz)
 
 	return (buffer-start);
 }
+
+void CustomTree::toggleCheckBox()
+{
+	if (this->checkCategory())
+		return;
+
+	this->setPercent(100 - this->getPercent());
+}
+
+void CustomTree::setCaption(LPCWSTR caption)
+{
+	wcscpy_s(this->caption, sizeof(this->caption)/sizeof(TCHAR), caption);
+}

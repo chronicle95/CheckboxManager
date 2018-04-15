@@ -19,11 +19,13 @@ public:
 	void setExpanded(BOOL state);
 	void setPercent(UINT percent);
 	UINT getPercent();
+	void setCaption(LPCWSTR caption);
 	LPCWSTR getCaptionP();
 	BOOL checkCategory();
 	BOOL saveToFile(LPCWSTR fileName);
 	BOOL loadFromFile(LPCWSTR fileName);
 	CustomTree *findNodeByHandle (HTREEITEM handle);
+	void toggleCheckBox();
 
 private:
 	BOOL isCategory;

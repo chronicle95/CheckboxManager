@@ -6,6 +6,10 @@
 
 #define MAX_LOADSTRING 100
 
+#define CM_ADD_ITEM 1
+#define CM_RENAME	2
+#define CM_REMOVE	3
+
 // Global Variables:
 HINSTANCE			g_hInst;			// current instance
 HWND				g_hWndMenuBar;		// menu bar handle
@@ -21,6 +25,7 @@ BOOL			InitInstance(HINSTANCE, int);
 LRESULT CALLBACK	WndProc(HWND, UINT, WPARAM, LPARAM);
 HWND TreeViewCreate(HWND);
 void TreeViewAddItem(HWND, LPWSTR, BOOL);
+void ProcessContextMenu(UINT, CustomTree *);
 
 int WINAPI WinMain(HINSTANCE hInstance,
 				   HINSTANCE hPrevInstance,
@@ -277,26 +282,49 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		break;
 
 	case WM_NOTIFY:
-		if (((LPNMHDR)lParam)->code == TVN_SELCHANGED)
+	{
+		LPNMHDR pNMHDR = reinterpret_cast<LPNMHDR>(lParam);
+		if (pNMHDR->hwndFrom == hwndTV)
 		{
-			currentItem = TreeView_GetSelection(hwndTV);
-			// TODO: Add proper code for check box changing event
-			CustomTree *ct = CTRoot->findNodeByHandle(currentItem);
-			if (ct && !ct->checkCategory())
+			if (pNMHDR->code == TVN_SELCHANGED)
 			{
-				UINT newPercent = 100 - ct->getPercent();
-				ct->setPercent(newPercent);
+				currentItem = TreeView_GetSelection(hwndTV);
+				CustomTree *ct = CTRoot->findNodeByHandle(currentItem);
+				if (ct)
+				{
+					ct->toggleCheckBox();
+					CTRoot->updateTreeView(hwndTV);
+				}
+			}
+			else if (pNMHDR->code == TVN_ITEMEXPANDED)
+			{
+				LPNMTREEVIEW tv;
+				tv = (LPNMTREEVIEW) lParam;
+				CTRoot->findNodeByHandle(currentItem)->setExpanded(tv->action == TVE_EXPAND);
 				CTRoot->updateTreeView(hwndTV);
 			}
 		}
-		else if (((LPNMHDR)lParam)->code == TVN_ITEMEXPANDED)
-		{
-			LPNMTREEVIEW tv;
-			tv = (LPNMTREEVIEW) lParam;
-			CTRoot->findNodeByHandle(currentItem)->setExpanded(tv->action == TVE_EXPAND);
-			CTRoot->updateTreeView(hwndTV);
-		}
 		break;
+	}
+
+	case WM_CONTEXTMENU:
+	{
+		HTREEITEM hItem = TreeView_GetNextItem(hwndTV, 0, TVGN_CARET);
+		CustomTree *ct = CTRoot->findNodeByHandle(hItem);
+
+		if (ct)
+		{
+			HMENU hPopupMenu = CreatePopupMenu();
+			InsertMenu(hPopupMenu, 0, MF_BYPOSITION | MF_STRING, CM_REMOVE, L"Remove");
+			InsertMenu(hPopupMenu, 0, MF_BYPOSITION | MF_STRING, CM_RENAME, L"Rename");
+			InsertMenu(hPopupMenu, 0, MF_BYPOSITION | MF_STRING, CM_ADD_ITEM, L"Add item");
+			SetForegroundWindow(mainWin);
+			UINT sel = TrackPopupMenu(hPopupMenu, TPM_BOTTOMALIGN | TPM_LEFTALIGN | TPM_RETURNCMD,
+									  GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam), 0, mainWin, NULL);
+
+			ProcessContextMenu(sel, ct);
+		}
+	}
 
 	default:
 		return DefWindowProc(hWnd, message, wParam, lParam);
@@ -352,4 +380,22 @@ void TreeViewAddItem(HWND hwndTV, LPWSTR s, BOOL cat)
 		CTRoot->addChild(newNode);
 	}
 	CTRoot->renderTreeView(hwndTV, NULL);
+}
+
+void ProcessContextMenu(UINT option, CustomTree *item)
+{
+	switch(option)
+	{
+	case CM_ADD_ITEM:
+		DialogBox(g_hInst, (LPCTSTR)IDD_ADDBOX, mainWin, Prompt);
+		TreeViewAddItem(hwndTV, (LPWSTR) &addedItem, false);
+		break;
+	case CM_RENAME:
+		DialogBox(g_hInst, (LPCTSTR)IDD_ADDBOX, mainWin, Prompt);
+		item->setCaption(addedItem);
+		CTRoot->updateTreeView(hwndTV);
+		break;
+	case CM_REMOVE:
+		break;
+	}
 }
